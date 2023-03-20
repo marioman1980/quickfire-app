@@ -33,6 +33,16 @@ export function ProductsCard() {
     <Toast {...toastProps} onDismiss={() => setToastProps(emptyToastProps)} />
   );
 
+  const handleUpdate = async () => {
+    fetch("/api/products/update")
+      .then(function(r) {
+        return(r.json());
+      })
+      .then(function(data) {
+        console.log(data);
+      });
+  }
+
   const handlePopulate = async () => {
     setIsLoading(true);
     const response = await fetch("/api/products/create");
@@ -56,8 +66,8 @@ export function ProductsCard() {
         title="Product Counter"
         sectioned
         primaryFooterAction={{
-          content: "Populate 5 products",
-          onAction: handlePopulate,
+          content: "Update product",
+          onAction: handleUpdate,
           loading: isLoading,
         }}
       >

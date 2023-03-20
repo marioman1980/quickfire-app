@@ -13,6 +13,7 @@ use Shopify\Auth\OAuth;
 use Shopify\Auth\Session as AuthSession;
 use Shopify\Clients\HttpHeaders;
 use Shopify\Clients\Rest;
+use Shopify\Clients\Graphql;
 use Shopify\Context;
 use Shopify\Exception\InvalidWebhookException;
 use Shopify\Utils;
@@ -91,9 +92,15 @@ Route::get('/api/products/count', function (Request $request) {
     $session = $request->get('shopifySession'); // Provided by the shopify.auth middleware, guaranteed to be active
 
     $client = new Rest($session->getShop(), $session->getAccessToken());
-    $result = $client->get('products/count');
 
-    return response($result->getDecodedBody());
+    return App::call('App\Http\Controllers\ProductsController@get_product_count', ['client' => $client]);
+})->middleware('shopify.auth');
+
+Route::get('/api/products/update', function (Request $request) {
+    $session = $request->get('shopifySession');
+    $client = new Graphql($session->getShop(), $session->getAccessToken());
+
+    return App::call('App\Http\Controllers\ProductsController@update_product', ['client' => $client]); 
 })->middleware('shopify.auth');
 
 Route::get('/api/products/create', function (Request $request) {
